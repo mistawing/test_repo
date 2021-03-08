@@ -1,0 +1,61 @@
+CSE451 Lab3
+Group member: Hae In Lee, Lemei Zhang
+
+Question 1:
+In xk's malloc, the number of bytes requested is rounded up to page (4096 bytes)
+when the number of bytes is less than a page size. This means that sometimes malloc
+will increase the heap size more than it is needed, so that the next instruction
+which may need more heap memory will not need to ask for more memory. This can
+reduce the number of system calls, making the application more efficient.
+
+
+Question 2:
+When the user types in "ls | wc" into the shell, pipe is inittially called, which
+returns two arbitrary file descriptors. The first file descriptor represents the
+read file descriptor and the second file descriptor represents the write file
+descriptor. After two fork() calls, the stdout (1) of the child process that will
+execute "ls" will be replaced by the write file descriptor of the pipe, and the
+stdin (0) of the child process that will execute "wc" will be replaced by the read
+file descriptor of the pipe.
+
+
+Question 3:
+After a page fault exception is handled, the user-level execution resumes with the
+instruction that initially caused the page fault and attempts to complete that
+instruction again with the changes that were made by the page fault handler.
+
+
+Question 4:
+The kernel can distinguish between the two cases by examining the address that is 
+being dereferenced. If the address is within the range [SZ_2G - 10 * PGSIZE, SZ_2G), 
+it is a normal stack operation and we will need to increment the size of the stack. 
+Otherwise, it is a stray pointer dereference and we will want to halt the application. 
+
+
+Question 5:
+It is possible to reduce the user stack size at run-time. xk can do so by keeping 
+track of the address that is stored inside register %rsp (the stack pointer) during 
+the execution of the procedure and after the procedure is finished, if these two 
+addresses that is stored inside %rsp are within different pages, we can reduce the 
+stack size by freeing all the allocated pages after the page that the %rsp is currently 
+pointing to since we are no longer using them. Then, we will decrement the value for 
+the variable that represent the stack size accordingly. (Note that during the execution 
+of a procedure, we cannot reduce the size of the user-stack)
+
+Using an example, suppose three pages are allocated to the stack, call them pg1, pg2, 
+and pg3, respectively, going from higher to lower addresses. During the execution of a 
+procedure, suppose that %rsp contains some address in pg3, and after the procedure is 
+finished, %rsp now contains some address in pg1, so the information in pg2 and pg3 are 
+no longer needed. We can free pg2 and pg3, decreasing the size of the stack by 2 * PGSIZE. 
+
+
+Question 6:
+xk will call vspaceinstall() to install an updated page table into the page table
+register, where the updated page table is created by calling vspaceinvalidate()
+on the current process's current vspace. By doing so, it flushes the TLB, which
+means that the TLB will no longer hold a stale version of the cache.
+
+
+Question 7:
+Hae: approximately 40 hours
+Lemei: approximately 40 hours

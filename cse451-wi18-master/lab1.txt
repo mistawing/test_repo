@@ -1,0 +1,53 @@
+CSE451 Lab 1
+Group member: Lemei Zhang, Hae In Lee
+
+Question1:
+a) Line 22 in main prints the cpu information
+b) Line 23 in main prints the physical memory table
+
+
+Question 2:
+The memory address of main is 0xffffffff8010342c
+
+GDB works with virtual addresses, not physical addresses
+
+
+Question 3:
+If the kernel and user-application are mapped to different address 
+spaces, it will result in additional computations for each system
+call for address conversion. By mapping the kernel and user-application
+to the same address space, it reduces a layer of abstration that would
+otherwise result in more overhead for each system call.
+
+
+Qustion 4:
+The difference between the two malloc is that the xk kernel malloc 
+allocates 4096-byte of contiguous physical memory each time, whereas the
+xk user malloc can allocate a variable amount of memory in the heap of 
+user-application's virtual address space. The difference of this is 
+because an user-application doesn't know about physical memory, as only 
+the operating system knows about the mapping between virtual and physical 
+addresses.
+
+The difference between the two prinf is that the xk user printf requires a
+file descriptor as an input parameter, whereas the xk kernel printf doesn't.
+This difference is because the xk user printf can print to any file, whereas
+the xk kernel input can only print to the console, so the file descriptor is
+used to check whether the user-application is printing to an opened file. 
+
+
+Question 5:
+pushq  $0x40
+
+
+Question 6:
+A trap frame is 176 bytes large.
+
+
+Question 7:
+The kernel functions that are reported by the backtrace when it reaches 
+sys_write are syscall() in kernel/syscall.c, trap() in kernel/trap.c, and 
+alltraps() in kernel/trapasm.S.
+
+Question 8:
+We both worked for 30 hours on the project.

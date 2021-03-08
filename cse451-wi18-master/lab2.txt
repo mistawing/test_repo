@@ -1,0 +1,31 @@
+CSE451 Lab2
+Group member: Lemei Zhang, Hae In Lee
+
+Question 1:
+The CPU calls the scheduler which loops through process table and
+calls swtch on each of the runnable processes. The switch inside
+the scheduler transfers control to this new process. When a
+process has done all its work, sched is called which saves and
+restores the intena, also calling swtch to return the control back
+to the scheduler.
+
+
+Question 2:
+In fork, in addition to the virtual space, the trap frame of the 
+parent is copied to the child which contains the information about
+where the user-level application is located. The child process 
+uses this information to return to the user level application.
+
+
+Question 3:
+Kill indirectly calls exit. Kill in xk takes a given pid and finds
+the corresponding process, setting it’s killed flag to true. The 
+process does not exit until it returns to the user space and the 
+trap checks if the process is killed and then calls exit on the 
+process. 
+
+
+Question 4:
+Lemei: 40 hours
+Hae: 40 hours 
+

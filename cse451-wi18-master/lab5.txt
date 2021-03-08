@@ -1,0 +1,46 @@
+Lab 5 Questions and Answers
+Group members: Hae In Lee, Lemei Zhang
+
+Question 1:
+The superblock describes how the disk is formatted. It keeps a record of the size of the 
+file system image, the number of data blocks for the file system, and the starting block 
+number for some sections in the disk: the bitmap region, the inode region, the swap region 
+(lab 4), and the log region (lab 5).
+
+
+Qustion 2:
+The bitmap is an array of ones and zeros that is used to keep track of whether a specific 
+disk block is used or free, where each index corresponds to a block in the file system. If 
+the bit for a specific index is 1, then the block it corresponds to is used, otherwise it 
+is free.
+
+
+Question 3:
+dirlookup looks for a directory entry in a directory, and return the inode for the directory 
+and its byte offset with respect to the start of the directory. It accepts an inode that 
+represents a directory, a char array that represents the name of the entry that we want to 
+look for, and a uint pointer poff for returning the byte offset of the directory entry with 
+respect to the start of the directory it is in. First, it will check whether the given inode 
+is a directory, if so, it will go through the directory entries for that inode (struct dirent), 
+and check whether one of them contains the same name as the passing file name. If so, we set 
+poff equal to the current byte offset from the start of the directory, and get and return 
+the inode of the file via iget, otherwise, 0 is returned.
+
+
+Question 4:
+To implement file delete in our project, we would add a valid bit to the dirent struct in 
+addition to a valid bit to the dinode struct. Upon delete we would (1) zero out the blocks 
+pointed to by the extents, (2) zero out the corresponding bits in the bitmap to indicate that 
+the blocks are available, (3) zero out the dinode struct, modifying the valid bit of the dinode 
+struct, and (4) zero out the dirent struct, modifying the valid bit of the dirent struct. To 
+ensure deletion is crash-safe we would also implement a delete log such that when delete is 
+called, we would first write the inum we wish to the delete to the log. The inum can then be 
+used to find the dinode and the dirent we wish to delete. One last thing we would have to do, 
+is also go through the icache and make sure copies of the inode no longer exist. After this, 
+we can then reset the delete log’s commit block, making it ready for another crash-safe delete.
+
+
+Question 5:
+Hae: ~50 hours
+Lemei: ~50 hours
+

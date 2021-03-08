@@ -1,0 +1,75 @@
+Lab 4 Questions and Answers
+Group members: Hae In Lee, Lemei Zhang
+
+Question 1:
+The core_map is initialized by mem_init() which takes in an address (vstart) and 
+sets the core_map’s beginning to this address. mem_init then sets aside memory for 
+npages of core_map_entry for the core_map, which stores metadata about a page stored 
+in physical memory. In every kalloc, instead of allocating the core_map, we change 
+the available bit of a core_map_entry inside the core_map to false to indicate that 
+its corresponding page in physical memory is valid. 
+
+In our implementation, the core_map is never evicted to disk as it is a part of 
+kernel memory and only stores metadata about a physical page. Instead, once physical 
+memory is full, a page on physical memory, which has it metadata stored in a 
+core_map_entry, is copied onto a page in disk and the metadata of this page on disk 
+is stored in a swap_entry which stores metadata about pages in disk. The old 
+core_map_entry’s available bit is then reset so that its corresponding physical page 
+can be used once again to store some other data.
+
+Reference: kernel/kalloc.c line 81 to 115; kalloc; kfree
+
+
+Question 2:
+The function xint changes the endianness of a given unsigned integer (32 bits / 4 bytes), 
+(i.e., from big endian to little endian, and vice versa, depends on the endianness of 
+the given unsigned integer). Similarly, the function xshort changes the endianness of 
+a given unsigned short (16 bits / 4 bytes). In the case of xk, we used these functions 
+to convert the values to intel byte order, i.e. little endian, to interact with the 
+intel CPU, which functions on little endian.
+
+Reference: mkfs.c line 49 to 70
+
+
+Question 3:
+When xk runs out of block cache entries, instead of creating more entries, entries 
+that are unused or clean are recycled. This is done in bget by resetting a buffer’s 
+(struct buf) internal data such as the device id, block number, flags, and reference 
+count. If there are no more unused or clean block cache entries to recycle, xk 
+will enter panic “bget: no buffers”.
+
+Reference: kernel/bio.c line 61 to 94
+
+
+Question 4:
+To support different virtual addresses across multiple address spaces in different 
+processes, we will need to make the core_map_entry and swap_entry to store a mapping 
+of pid to a list of virtual addresses. It is necessary because we need to know which 
+process has a virtual address that corresponds to a specific page in physical 
+memory/swap region, and a single process can have multiple virtual addresses that 
+correspond to the same page. We can achieve this by making each mapping a struct, 
+where the struct will contain a pid, and a list of virtual addresses, and having a 
+linked list of such struct stored in each core_map_entry and swap_map_entry.
+
+When swapping out a page, we will go through all the processes, and for each process, 
+go through the list of structs that represents the mapping in the core_map_entry that 
+correspond to the evicted page, and see if any of them contains a pid that is the same 
+as the current process’s pid. If so, for the struct that contains the same pid as the 
+current process’s pid,  we will find all the vpage_info that corresponds to any virtual 
+address that this struct contains, and update them accordingly to indicate that the 
+page they correspond to are now in the swap region.
+
+When swapping in a page, we will go through all the processes, and for each process, 
+go through the list of structs that represents the mapping in the swap_entry that 
+correspond to the page that will be swapped in, and see if any of them contains a 
+pid that is the same as the current process’s pid. If so, for the struct that contains 
+the same pid as the current process’s pid, we will find all the vpage_info that 
+corresponds to any virtual address that this struct contains, and update them 
+accordingly to indicate that the page they correspond to are now in physical memory.
+
+
+Question 5:
+Hae: ~50 hours
+Lemei: ~50 hours 
+
+
